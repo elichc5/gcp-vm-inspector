@@ -1,4 +1,3 @@
-````markdown
 # gcp-vm-inspector
 
 A Bash utility to collect detailed, hierarchical information about a Google Compute Engine VM and generate a structured text report.
@@ -25,7 +24,7 @@ A Bash utility to collect detailed, hierarchical information about a Google Comp
    ```bash
    git clone https://github.com/<your-user>/gcp-vm-inspector.git
    cd gcp-vm-inspector
-````
+
 
 2. Make the script executable:
 
@@ -50,8 +49,3 @@ This will create a file named `vm-example_YYYYMMDD_info.txt` containing the full
 ## License
 
 MIT License © \Francisco Chaná
-
-```
-
-
-```
