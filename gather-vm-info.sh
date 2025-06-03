@@ -194,7 +194,7 @@ OUTPUT_FILE="${INSTANCE_NAME}_${DATE}_info.txt"
       echo "                --source-snapshot=${snap_name}"
       echo
       echo "       # 3) Create new Disk from Image:"
-      echo "            gcloud compute disks create ${snap_name}-from-image \\"
+      echo "            gcloud compute disks create ${snap_name} \\"
       if echo "$src" | grep -q "/regions/"; then
         echo "                  --project=${PROJECT_ID} --region=${region} \\"
       else
