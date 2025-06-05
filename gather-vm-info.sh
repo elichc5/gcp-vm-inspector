@@ -119,7 +119,7 @@ OUTPUT_FILE="${INSTANCE_NAME}_${DATE}_info.txt"
   echo
 
   # -----------------------------------------------------------------
-  # 7) Disks (boot and attached)
+  # 7) Commands for disks (boot and attached)
   # -----------------------------------------------------------------
   echo "==> Attached Disks:"
   mapfile -t DISKS < <(jq -r '.disks[] | @base64' <<< "${instance_json}")
@@ -204,9 +204,46 @@ OUTPUT_FILE="${INSTANCE_NAME}_${DATE}_info.txt"
       echo "                    --size=${size}GB \\"
       echo "                    --type=${disk_type}"
       echo
+      echo "       # 4) Create new Disk from Snapshot:"
+      echo "            gcloud compute disks create ${snap_name}-from-snapshot \\"
+      if echo "$src" | grep -q "/regions/"; then
+        echo "                  --project=${PROJECT_ID} --region=${region} \\"
+      else
+        echo "                  --project=${PROJECT_ID} --zone=${zone_from_src} \\"
+      fi
+      echo "                    --source-snapshot=${snap_name} \\"
+      echo "                    --size=${size}GB \\"
+      echo "                    --type=${disk_type}"
+      echo
 
     done
   fi
+
+  #
+  # 8) Disk Summary
+  #
+  echo "==> Disk Summary:"
+  # Extract boot disk name
+  boot_disk=$(jq -r '.disks[] | select(.boot==true) | .source' <<< "${instance_json}" | xargs basename)
+  if [ -n "${boot_disk}" ] && [ "${boot_disk}" != "null" ]; then
+    echo "    - Boot disk: ${boot_disk}"
+  else
+    echo "    - Boot disk: None"
+  fi
+
+  # Extract all non-boot (data) disks
+  data_disks=( $(jq -r '.disks[] | select(.boot==false) | .source' <<< "${instance_json}" | xargs -n1 basename) )
+  if [ ${#data_disks[@]} -eq 0 ]; then
+    echo "    - Data disks: None"
+  else
+    count=1
+    for dd in "${data_disks[@]}"; do
+      echo "    - Data disk ${count}: ${dd}"
+      count=$((count + 1))
+    done
+  fi
+  echo
+
 
   echo
   echo "----------------------------------------------------------"
